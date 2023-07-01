@@ -1,14 +1,61 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import {System} from "@/types/System";
 import {Requirements} from "@/types/Requirements";
+import * as fs from "fs";
+import {openai} from "@/utils/openai";
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<System>
+  res: NextApiResponse<any>
 ) {
-  console.log(req.body as Requirements);
-  res.status(200).json(dummyData)
+  const {requirements, title, description} = req.body as{
+    requirements: Requirements,
+    title: string,
+    description: string
+  }
+  const systemTypes = fs.readFileSync('src/types/System.ts').toString()
+  const prompt = `
+${systemTypes}
+You can use zero or more machines of each type(don't use any unnecessary server) and give them proper names(up to 3-4 words) and descriptions(up to 2-3 lines)
+  
+Return a single JSON of the System type for a distributed system that defines high level of ${title} which is ${description}.
+
+Functional Requirements:
+  ${
+    requirements.functional.reduce((acc, arg)=>{
+      return `${acc}
+\t- ${arg}`
+    }, "")
+  }
+
+Non Functional Requirements:
+  ${
+    requirements.nonFunctional.reduce((acc, arg)=>{
+      return `${acc}
+\t- ${arg}`
+    }, "")
+  }
+  `
+  try {
+    const chatCompletion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {role: "user", content: prompt},
+        {role: "assistant", content: "content of system.json file is"}
+      ],
+    });
+
+    const rawReply = chatCompletion.data.choices[0].message
+
+    const system = rawReply?.content? JSON.parse(rawReply.content) : {machines: []}
+
+    res.status(200).json(system)
+  } catch (e){
+    console.log(e)
+    res.status(429).json({
+      message: "Too many requests ..."
+    })
+  }
 }
 
 

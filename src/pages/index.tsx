@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {Inter} from 'next/font/google'
 import {RequirementsForm} from "@/components/RequirementsForm";
 import {Stack} from "@mui/system";
-import {SystemDisplay} from "@/components/SystemDisplay";
+import {DisplayContainer} from "@/components/DisplayContainer";
 import {DisplayProvider} from "@/context/DisplayContext";
 
 const inter = Inter({subsets: ['latin']})
@@ -19,7 +19,7 @@ export default function Home() {
       <DisplayProvider>
         <Stack spacing={2} direction={"row"}>
           <RequirementsForm/>
-          <SystemDisplay/>
+          <DisplayContainer/>
         </Stack>
       </DisplayProvider>
     </>

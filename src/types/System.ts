@@ -16,6 +16,7 @@ export type Machine = {
   connectedTo: MachineID[]
   description: string
 }
+// machineA.connectedTo.includes(machineB.machineID) means machineA sends requests to machineB
 
 
 export type System = {
