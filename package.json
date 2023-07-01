@@ -14,16 +14,22 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.6",
     "@react-sigma/core": "^3.4.2",
-    "@types/node": "20.3.3",
+    "@react-sigma/layout-forceatlas2": "^3.4.2",
+    "@react-sigma/layout-noverlap": "^3.4.2",
     "@types/lodash": "^4.14.195",
+    "@types/node": "20.3.3",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.7",
+    "graphology": "^0.25.1",
+    "graphology-types": "^0.24.7",
+    "lodash": "^4.17.21",
     "next": "13.4.7",
     "openai": "^3.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sigma": "^2.4.0",
     "typescript": "5.1.6"
   }
 }

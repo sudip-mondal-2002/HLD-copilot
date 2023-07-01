@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type {NextApiRequest, NextApiResponse} from 'next'
 import {System} from "@/types/System";
 import {Requirements} from "@/types/Requirements";
 import * as fs from "fs";
@@ -8,7 +8,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  const {requirements, title, description} = req.body as{
+  return res.status(200).json(dummyData)
+  const {requirements, title, description} = req.body as {
     requirements: Requirements,
     title: string,
     description: string
@@ -22,7 +23,7 @@ Return a single JSON of the System type for a distributed system that defines hi
 
 Functional Requirements:
   ${
-    requirements.functional.reduce((acc, arg)=>{
+    requirements.functional.reduce((acc, arg) => {
       return `${acc}
 \t- ${arg}`
     }, "")
@@ -30,7 +31,7 @@ Functional Requirements:
 
 Non Functional Requirements:
   ${
-    requirements.nonFunctional.reduce((acc, arg)=>{
+    requirements.nonFunctional.reduce((acc, arg) => {
       return `${acc}
 \t- ${arg}`
     }, "")
@@ -47,10 +48,10 @@ Non Functional Requirements:
 
     const rawReply = chatCompletion.data.choices[0].message
 
-    const system = rawReply?.content? JSON.parse(rawReply.content) : {machines: []}
+    const system = rawReply?.content ? JSON.parse(rawReply.content) : {machines: []}
 
     res.status(200).json(system)
-  } catch (e){
+  } catch (e) {
     console.log(e)
     res.status(429).json({
       message: "Too many requests ..."
@@ -60,69 +61,41 @@ Non Functional Requirements:
 
 
 const dummyData: System = JSON.parse(`{
-  "machines": [
-    {
-      "id": 1,
-      "name": "AuthServer",
-      "machineType": "VIRTUAL_MACHINE",
-      "connectedTo": [],
-      "description": "Handles user authentication"
-    },
-    {
-      "id": 2,
-      "name": "DBServer",
-      "machineType": "SQL_DATABASE",
-      "connectedTo": [],
-      "description": "Stores blog data"
-    },
-    {
-      "id": 3,
-      "name": "ImageServer",
-      "machineType": "FILE_STORAGE",
-      "connectedTo": [],
-      "description": "Stores and serves blog images"
-    },
-    {
-      "id": 4,
-      "name": "CommentServer",
-      "machineType": "VIRTUAL_MACHINE",
-      "connectedTo": [2],
-      "description": "Handles user comments and stores them in the database"
-    },
-    {
-      "id": 5,
-      "name": "ReviewServer",
-      "machineType": "VIRTUAL_MACHINE",
-      "connectedTo": [2],
-      "description": "Reviews and moderates posts/comments for inappropriate content"
-    },
-    {
-      "id": 6,
-      "name": "LoadBalancer",
-      "machineType": "LOAD_BALANCER",
-      "connectedTo": [1, 2, 3, 4, 5],
-      "description": "Distributes incoming traffic across the servers for scalability and load balancing"
-    },
-    {
-      "id": 7,
-      "name": "CacheServer",
-      "machineType": "CACHE",
-      "connectedTo": [2],
-      "description": "Caches frequently accessed blog data for improved performance"
-    },
-    {
-      "id": 8,
-      "name": "CDNServer",
-      "machineType": "CONTENT_DELIVERY_NETWORK",
-      "connectedTo": [3],
-      "description": "Delivers static content (images) to users efficiently"
-    },
-    {
-      "id": 9,
-      "name": "MessageQueueServer",
-      "machineType": "MESSAGE_QUEUE",
-      "connectedTo": [],
-      "description": "Handles asynchronous processing of tasks like blog updates, notifications, etc."
-    }
-  ]
+"machines": [
+{
+"id": 1,
+"name": "AuthServer",
+"machineType": "COMPUTE",
+"connectedTo": [2],
+"description": "Handles user authentication and authorization."
+},
+{
+"id": 2,
+"name": "DatabaseServer",
+"machineType": "SQL_DATABASE",
+"connectedTo": [3, 4, 5],
+"description": "Stores user and blog data."
+},
+{
+"id": 3,
+"name": "ImageServer",
+"machineType": "FILE_STORAGE",
+"connectedTo": [],
+"description": "Stores blog images."
+},
+{
+"id": 4,
+"name": "CommentServer",
+"machineType": "NOSQL_DATABASE",
+"connectedTo": [2],
+"description": "Stores user comments."
+},
+{
+"id": 5,
+"name": "ReviewServer",
+"machineType": "COMPUTE",
+"connectedTo": [2],
+"description": "Handles review of posts and comments."
+}
+]
 }`) as System;

@@ -16,6 +16,7 @@ export const RequirementsInput = (
       margin={"normal"}
       placeholder={placeholder}
       label={"Add new requirement"}
+      helperText={"Press Enter to add"}
       fullWidth={true}
       value={requirement}
       onChange={(event) => setRequirement(event.target.value)}
