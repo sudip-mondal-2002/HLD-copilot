@@ -39,15 +39,19 @@ export const useHldGenerator = (projectID?: string) => {
     const history = JSON.parse(localStorage.getItem("history") || "[]")
     if (projectID) {
       const index = history.findIndex((item: HistoryItem) => item.id === projectID)
-      history[index] = historyItem
-      if(!index){
+      if(index === -1 || history.length === 0){
         history.push(historyItem)
+      }else {
+        history[index] = historyItem
       }
     } else{
       history.push(historyItem)
     }
     localStorage.setItem("history", JSON.stringify(history))
 
+    if(projectID){
+      return window.location.reload()
+    }
     // navigate to the system page
     await router.push(`/system/${historyItem.id}`)
   }
@@ -57,7 +61,7 @@ export const useHldGenerator = (projectID?: string) => {
     const index = history.findIndex((item: HistoryItem) => item.id === id)
     history.splice(index, 1)
     localStorage.setItem("history", JSON.stringify(history))
-    router.push("/")
+    window.location.reload()
   }
 
   return {

@@ -1,16 +1,17 @@
 import {System} from "@/types/System";
 import Graph from "graphology";
 import React, {useEffect} from "react";
-import {SigmaContainer, useLoadGraph, useSigma} from "@react-sigma/core";
+import {SigmaContainer, useLoadGraph, useRegisterEvents} from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
-import {useLayoutNoverlap} from "@react-sigma/layout-noverlap";
 import {MachineTypes} from "@/types/System";
 import getNodeImageProgram from "sigma/rendering/webgl/programs/node.image";
+import {useLayoutForceAtlas2} from "@react-sigma/layout-forceatlas2";
+import {SigmaNodeEventPayload} from "sigma/sigma";
+import {Box} from "@mui/material";
 
 type SystemDisplayProps = {
   system: System
 }
-
 
 const getImageUrlFromMachineType = (machineType: MachineTypes) => {
   switch (machineType) {
@@ -34,47 +35,73 @@ const getImageUrlFromMachineType = (machineType: MachineTypes) => {
       return "./load-balancer.svg"
   }
 }
+const GraphComponent = ({system, setDescription}: {
+    system: System
+    setDescription: (description: string) => void
+}) => {
+  const {assign} = useLayoutForceAtlas2()
+  const loadGraph = useLoadGraph()
+  const registerEvents = useRegisterEvents()
+  React.useEffect(() => {
+    const graph = new Graph()
 
-const SystemDisplay = ({system}: SystemDisplayProps) => {
-  const GraphComponent = () => {
-    const sigma = useSigma()
-    const {positions, assign} = useLayoutNoverlap()
-    const loadGraph = useLoadGraph()
-    React.useEffect(() => {
-      const graph = new Graph()
-
-      system.machines.forEach((machine, index) => {
-        graph.addNode(machine.id,
-          {
-            label: machine.name,
-            type: "image",
-            image: getImageUrlFromMachineType(machine.machineType),
-            color: "#0000",
-            shape: "rect",
-            size: 30,
-            x: Math.random(),
-            y: Math.random()
-          })
-      })
-      system.machines.forEach(machine => {
-        machine.connectedTo.forEach(connectedTo => {
-          graph.addEdge(machine.id, connectedTo, {
-            type: "arrow",
-            size: 10,
-            thickness: 2,
-          })
+    system.machines.forEach((machine, index) => {
+      graph.addNode(machine.id,
+        {
+          label: machine.name,
+          type: "image",
+          image: getImageUrlFromMachineType(machine.machineType),
+          color: "#0000",
+          shape: "rect",
+          size: 30,
+          x: Math.random(),
+          y: Math.random()
+        })
+    })
+    system.machines.forEach(machine => {
+      machine.connectedTo.forEach(connectedTo => {
+        graph.addEdge(machine.id, connectedTo, {
+          type: "arrow",
+          size: 10,
+          thickness: 2,
         })
       })
-      loadGraph(graph)
-      assign()
-    }, [loadGraph])
-    return null
-  }
+    })
+    loadGraph(graph)
+    assign()
+  }, [loadGraph])
+  React.useEffect(() => {
+    registerEvents({
+      enterNode(payload: SigmaNodeEventPayload) {
+        const machine = system.machines.find(machine => machine.id === parseInt(payload.node))
+        if(machine) {
+          setDescription(machine.description)
+        }
+      },
+      leaveNode() {
+        setDescription("")
+      }
+    })
+  }, [registerEvents])
+  return null
+}
+const SystemDisplay = ({system}: SystemDisplayProps) => {
+  const [description, setDescription] = React.useState<string>("")
 
-  return <SigmaContainer
+
+  return <Box>
+    <Box sx={{
+      border: "1px solid #ccc",
+      borderRadius: "5px",
+      marginY: "20px",
+      padding: "20px",
+      display: "inline-block"
+    }}>{description || "Hover over a machine to know how that works"}</Box>
+
+    <SigmaContainer
     style={{
       width: "70vw",
-      height: "90vh"
+      height: "70vh",
     }}
     settings={{
       defaultEdgeType: "arrow",
@@ -86,8 +113,9 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
       }
     }}
   >
-    <GraphComponent/>
-  </SigmaContainer>
+    <GraphComponent system={system} setDescription={setDescription}/>
+  </SigmaContainer></Box>
+
 }
 
 export default SystemDisplay;
