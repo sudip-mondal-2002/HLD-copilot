@@ -60,7 +60,8 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
         machine.connectedTo.forEach(connectedTo => {
           graph.addEdge(machine.id, connectedTo, {
             type: "arrow",
-            size: 2,
+            size: 10,
+            thickness: 2,
           })
         })
       })
@@ -72,12 +73,14 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
 
   return <SigmaContainer
     style={{
-      width: "60vw",
+      width: "70vw",
       height: "90vh"
     }}
     settings={{
       defaultEdgeType: "arrow",
       defaultNodeType: "rect",
+      maxCameraRatio: 1,
+      minCameraRatio: 1,
       nodeProgramClasses: {
         image: getNodeImageProgram()
       }

@@ -13,7 +13,7 @@ export type HistoryItem = {
 export const useHldGenerator = (projectID?: string) => {
 
   const router = useRouter()
-  return async (requirements: Requirements, projectTitle: string, projectDescription: string) => {
+  const generate = async (requirements: Requirements, projectTitle: string, projectDescription: string) => {
     const data = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -40,6 +40,9 @@ export const useHldGenerator = (projectID?: string) => {
     if (projectID) {
       const index = history.findIndex((item: HistoryItem) => item.id === projectID)
       history[index] = historyItem
+      if(!index){
+        history.push(historyItem)
+      }
     } else{
       history.push(historyItem)
     }
@@ -47,5 +50,18 @@ export const useHldGenerator = (projectID?: string) => {
 
     // navigate to the system page
     await router.push(`/system/${historyItem.id}`)
+  }
+
+  const deleteHistoryItem = (id: string) => {
+    const history = JSON.parse(localStorage.getItem("history") || "[]")
+    const index = history.findIndex((item: HistoryItem) => item.id === id)
+    history.splice(index, 1)
+    localStorage.setItem("history", JSON.stringify(history))
+    router.push("/")
+  }
+
+  return {
+    generate,
+    deleteHistoryItem
   }
 }

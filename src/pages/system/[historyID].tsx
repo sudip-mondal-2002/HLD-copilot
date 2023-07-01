@@ -33,7 +33,7 @@ const SystemHistory = () => {
       <meta name="viewport" content="width=device-width, initial-scale=1"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
-    <Stack spacing={2} direction={"row"}>
+    <Stack spacing={10} direction={"row"}>
       {history && <> <RequirementsForm
         _projectTitle={history.title}
         _projectDescription={history.description}

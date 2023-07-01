@@ -8,7 +8,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  return res.status(200).json(dummyData)
   const {requirements, title, description} = req.body as {
     requirements: Requirements,
     title: string,
@@ -36,6 +35,8 @@ Non Functional Requirements:
 \t- ${arg}`
     }, "")
   }
+
+The whole system should be distributed but a connected network and the connectedTo field should be filled properly for each machine.
   `
   try {
     const chatCompletion = await openai.createChatCompletion({
@@ -48,7 +49,7 @@ Non Functional Requirements:
 
     const rawReply = chatCompletion.data.choices[0].message
 
-    const system = rawReply?.content ? JSON.parse(rawReply?.content || "") : {machines: []}
+    const system = rawReply?.content ? JSON.parse(rawReply.content || "") : {machines: []}
 
     res.status(200).json(system)
   } catch (e) {
