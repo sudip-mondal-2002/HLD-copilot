@@ -4,8 +4,6 @@ import React, {useEffect} from "react";
 import {SigmaContainer, useLoadGraph, useSigma} from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
 import {useLayoutNoverlap} from "@react-sigma/layout-noverlap";
-import {animateNodes} from "sigma/utils/animate";
-import {Sigma} from "sigma";
 
 type SystemDisplayProps = {
   system: System
@@ -46,8 +44,8 @@ const SystemDisplay = ({system}: SystemDisplayProps)=>{
 
   return <SigmaContainer
     style={{
-    width: "80%",
-    height: "80%",
+    width: "60vw",
+    height: "100vh",
   }}
     settings={{
       defaultEdgeType: "arrow"

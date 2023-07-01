@@ -1,37 +1,34 @@
 import {Container, Button, Typography, TextField} from "@mui/material";
 import {Requirements} from "@/types/Requirements";
 import React from "react";
-import {RequirementsInput} from "@/components/RequirementsInput";
-import {RequirementDisplay} from "@/components/RequirementDisplay";
-import {DisplayContext} from "@/context/DisplayContext";
+import {RequirementsInput} from "@/components/input/RequirementsInput";
+import {RequirementDisplay} from "@/components/input/RequirementDisplay";
+import {useHldGenerator} from "@/hooks/useHldGenerator";
 
-export const RequirementsForm = () => {
-  const [requirements, setRequirements] = React.useState<Requirements>({
-    functional: [],
-    nonFunctional: []
-  })
+type RequirementsFormProps = {
+  _projectTitle?: string;
+  _projectDescription?: string;
+  _requirements?: Requirements;
+  _projectID?: string;
+}
 
-  const [projectTitle, setProjectTitle] = React.useState<string>("")
-  const [projectDescription, setProjectDescription] = React.useState<string>("")
+export const RequirementsForm = (
+  {
+    _projectID = undefined,
+    _projectTitle = "",
+    _projectDescription = "",
+    _requirements = {
+      functional: [],
+      nonFunctional: []
+    }
+  }: RequirementsFormProps) => {
+  const [requirements, setRequirements] = React.useState<Requirements>(_requirements)
 
-  const displayContext = React.useContext(DisplayContext)
+  const [projectTitle, setProjectTitle] = React.useState<string>(_projectTitle)
+  const [projectDescription, setProjectDescription] = React.useState<string>(_projectDescription)
+  const [isGenerating, setIsGenerating] = React.useState<boolean>(false)
 
-  const generateSystem = async () => {
-    const data = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        requirements,
-        title: projectTitle,
-        description: projectDescription
-      })
-    })
-    const system = await data.json()
-    displayContext.setSystem(system)
-  }
+  const generateSystem = useHldGenerator(_projectID)
 
   return (
     <Container
@@ -98,14 +95,19 @@ export const RequirementsForm = () => {
       />
 
       <Button
-        onClick={generateSystem}
+        onClick={async () => {
+          setIsGenerating(true)
+          await generateSystem(requirements, projectTitle, projectDescription)
+          setIsGenerating(false)
+        }}
         variant={"contained"}
-        disabled={!projectTitle || !projectDescription}
+        disabled={!projectTitle || !projectDescription || isGenerating}
         sx={{
-          width: "100%"
+          width: "100%",
+          textTransform: "none",
         }}
       >
-        Generate System Architecture
+        {isGenerating ? "Generating ..." : <span>{_projectTitle && "Re-"}Generate System Architecture</span>}
       </Button>
 
     </Container>
