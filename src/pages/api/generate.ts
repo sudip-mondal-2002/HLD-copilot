@@ -4,10 +4,13 @@ import {Requirements} from "@/types/Requirements";
 import * as fs from "fs";
 import {openai} from "@/utils/openai";
 
-export async function POST(
+export default async function POST(
   req: NextApiRequest,
   res: NextApiResponse<System>
 ) {
+  if(req.method !== "POST"){
+    return res.status(405).end()
+  }
   const {requirements, title, description} = req.body as {
     requirements: Requirements,
     title: string,
@@ -93,9 +96,3 @@ The machine descriptions(2-3 sentences) should be written in a way that a new de
   }
 }
 
-export default async function nextApiHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "POST") {
-    return await POST(req, res)
-  }
-  res.status(404).end()
-}
