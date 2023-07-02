@@ -130,6 +130,7 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
       height: "70vh",
     }}
     settings={{
+      hideLabelsOnMove: false,
       defaultEdgeType: "arrow",
       maxCameraRatio: 1,
       minCameraRatio: 1,

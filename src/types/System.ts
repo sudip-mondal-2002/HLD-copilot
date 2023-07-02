@@ -23,7 +23,7 @@ export type Machine = {
 export type User = {
   name: string // customer/admin/vendor/...(stakeholder)
   description: string
-  requests: MachineID[] // users should not be able to send requests only to API_GATEWAYs or LOAD_BALANCERs
+  requests: MachineID[] // id of API_GATEWAY/CDN(when needed) that the user can request to
 }
 
 export type System = {
