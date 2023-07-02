@@ -1,6 +1,6 @@
 import {System} from "@/types/System";
 import Graph from "graphology";
-import React, {useEffect} from "react";
+import React from "react";
 import {SigmaContainer, useLoadGraph, useRegisterEvents} from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
 import {MachineTypes} from "@/types/System";
@@ -26,13 +26,13 @@ const getImageUrlFromMachineType = (machineType: MachineTypes) => {
     case MachineTypes.CACHE:
       return "/cache.svg"
     case MachineTypes.MESSAGE_QUEUE:
-      return "/message-queue.svg"
+      return "/queue.svg"
     case MachineTypes.FILE_STORAGE:
       return "/file-storage.svg"
     case MachineTypes.CONTENT_DELIVERY_NETWORK:
       return "/cdn.svg"
     case MachineTypes.LOAD_BALANCER:
-      return "./load-balancer.svg"
+      return "/load-balancer.svg"
   }
 }
 const GraphComponent = ({system, setDescription}: {
@@ -45,13 +45,13 @@ const GraphComponent = ({system, setDescription}: {
   React.useEffect(() => {
     const graph = new Graph()
 
-    system.machines.forEach((machine, index) => {
+    system.machines.forEach(machine => {
       graph.addNode(machine.id,
         {
           label: machine.name,
           type: "image",
           image: getImageUrlFromMachineType(machine.machineType),
-          color: "#0000",
+          color: "#fff",
           shape: "rect",
           size: 30,
           x: Math.random(),
@@ -59,30 +59,56 @@ const GraphComponent = ({system, setDescription}: {
         })
     })
     system.machines.forEach(machine => {
-      machine.connectedTo.forEach(connectedTo => {
-        graph.addEdge(machine.id, connectedTo, {
-          type: "arrow",
-          size: 10,
-          thickness: 2,
+      machine.uses.forEach(uses => {
+        if (!system.machines.find(machine => machine.id === uses)) {
+            return
+        }
+        graph.addEdge(machine.id, uses, {
+          size: 5
+        })
+      })
+    })
+
+    system.users.forEach(user => {
+        graph.addNode(user.name,
+            {
+            label: user.name,
+            type: "image",
+            image: "/user.svg",
+            color: "#fff",
+            shape: "rect",
+            size: 30,
+            x: Math.random(),
+            y: Math.random()
+            })
+    })
+
+    system.users.forEach(user => {
+      user.requests.forEach(request => {
+        if (!system.machines.find(machine => machine.id === request)) {
+            return
+        }
+        graph.addEdge(user.name, request, {
+          size: 10
         })
       })
     })
     loadGraph(graph)
     assign()
-  }, [loadGraph])
+  }, [assign, loadGraph, system.machines, system.users])
   React.useEffect(() => {
     registerEvents({
       enterNode(payload: SigmaNodeEventPayload) {
         const machine = system.machines.find(machine => machine.id === parseInt(payload.node))
         if(machine) {
-          setDescription(machine.description)
+          setDescription(machine.machineType + " : " + machine.description)
         }
       },
       leaveNode() {
         setDescription("")
       }
     })
-  }, [registerEvents])
+  }, [registerEvents, setDescription, system.machines])
   return null
 }
 const SystemDisplay = ({system}: SystemDisplayProps) => {
@@ -105,7 +131,6 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
     }}
     settings={{
       defaultEdgeType: "arrow",
-      defaultNodeType: "rect",
       maxCameraRatio: 1,
       minCameraRatio: 1,
       nodeProgramClasses: {

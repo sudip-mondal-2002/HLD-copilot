@@ -30,7 +30,7 @@ export const useHldGenerator = (projectID?: string) => {
     // store the system in the local storage
 
     const historyItem: HistoryItem = {
-      id: v4(),
+      id: projectID || v4(),
       title: projectTitle,
       description: projectDescription,
       requirements: requirements,

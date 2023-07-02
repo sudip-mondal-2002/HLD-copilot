@@ -5,6 +5,7 @@ import {Stack} from "@mui/system";
 import dynamic from "next/dynamic";
 import React from "react";
 import Head from "next/head";
+import {Container} from "@mui/material";
 
 const SystemDisplay = dynamic(import("@/components/graph/SystemDisplay"), {ssr: false});
 
@@ -13,18 +14,10 @@ const SystemHistory = () => {
   const {historyID} = router.query
   const [history, setHistory] = React.useState<HistoryItem>()
   React.useEffect(() => {
-    if(!historyID) {
-      router.push("/")
-      return
-    }
     const loadedHistory = JSON.parse(localStorage?.getItem("history") || "[]")
     const historyItem = loadedHistory.find((item: HistoryItem) => item.id === historyID)
-    if(!historyItem) {
-      router.push("/")
-      return
-    }
     setHistory(historyItem)
-  }, []);
+  }, [historyID, setHistory]);
 
   return <>
     <Head>
@@ -33,15 +26,20 @@ const SystemHistory = () => {
       <meta name="viewport" content="width=device-width, initial-scale=1"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
-    <Stack spacing={10} direction={"row"}>
-      {history && <> <RequirementsForm
+    <Container maxWidth={false} sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
+    }}>
+      {history ? <> <RequirementsForm
         _projectTitle={history.title}
         _projectDescription={history.description}
         _requirements={history.requirements}
         _projectID={history.id}
       />
-        <SystemDisplay system={history.system}/></>}
-    </Stack></>
+        <SystemDisplay system={history.system}/></>: <p>Loading...</p>}
+    </Container></>
 }
 
 export default SystemHistory
