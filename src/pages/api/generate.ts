@@ -93,3 +93,9 @@ The machine descriptions(2-3 sentences) should be written in a way that a new de
   }
 }
 
+export default async function nextApiHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === "POST") {
+    return await POST(req, res)
+  }
+  res.status(404).end()
+}
