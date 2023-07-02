@@ -28,7 +28,7 @@ export const RequirementsForm = (
   const [projectDescription, setProjectDescription] = React.useState<string>(_projectDescription)
   const [isGenerating, setIsGenerating] = React.useState<boolean>(false)
 
-  const {generate: generateSystem} = useHldGenerator(_projectID)
+  const {generate: generateSystem} = useHldGenerator()
 
   return (
     <Container>

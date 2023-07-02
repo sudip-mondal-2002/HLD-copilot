@@ -10,10 +10,18 @@ export type HistoryItem = {
   requirements: Requirements,
   system: System
 }
-export const useHldGenerator = (projectID?: string) => {
+export const useHldGenerator = () => {
 
   const router = useRouter()
-  const generate = async (requirements: Requirements, projectTitle: string, projectDescription: string) => {
+  const projectID = router.query.historyID as string | undefined
+  const generate = async (requirements: Requirements, projectTitle: string, projectDescription: string, incomingChat?:{
+    currentSystem: System,
+    message: string
+  }) => {
+    const history = JSON.parse(localStorage.getItem("history") || "[]")
+
+    const currentSystem = history.find((item: HistoryItem) => item.id === projectID)?.system
+
     const data = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -23,7 +31,8 @@ export const useHldGenerator = (projectID?: string) => {
       body: JSON.stringify({
         requirements,
         title: projectTitle,
-        description: projectDescription
+        description: projectDescription,
+        incomingChat
       })
     })
     const system = await data.json()
@@ -36,7 +45,6 @@ export const useHldGenerator = (projectID?: string) => {
       requirements: requirements,
       system: system
     }
-    const history = JSON.parse(localStorage.getItem("history") || "[]")
     if (projectID) {
       const index = history.findIndex((item: HistoryItem) => item.id === projectID)
       if(index === -1 || history.length === 0){
@@ -64,8 +72,17 @@ export const useHldGenerator = (projectID?: string) => {
     window.location.reload()
   }
 
+  const chat = async (message: string) => {
+    const history = JSON.parse(localStorage.getItem("history") || "[]")
+    const historyItem = history.find((item: HistoryItem) => item.id === projectID)
+    await generate(historyItem.requirements, historyItem.title, historyItem.description, {
+        currentSystem: historyItem.system,
+        message: message
+    })
+  }
   return {
     generate,
-    deleteHistoryItem
+    deleteHistoryItem,
+    chat
   }
 }

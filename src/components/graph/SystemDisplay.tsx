@@ -8,6 +8,7 @@ import getNodeImageProgram from "sigma/rendering/webgl/programs/node.image";
 import {useLayoutForceAtlas2} from "@react-sigma/layout-forceatlas2";
 import {SigmaNodeEventPayload} from "sigma/sigma";
 import {Box} from "@mui/material";
+import {ChatBox} from "@/components/graph/ChatBox";
 
 type SystemDisplayProps = {
   system: System
@@ -77,7 +78,7 @@ const GraphComponent = ({system, setDescription}: {
             image: "/user.svg",
             color: "#fff",
             shape: "rect",
-            size: 30,
+            size: 20,
             x: Math.random(),
             y: Math.random()
             })
@@ -115,19 +116,22 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
   const [description, setDescription] = React.useState<string>("")
 
 
-  return <Box>
+  return <Box sx={{
+    padding: "20px"
+  }}>
     <Box sx={{
       border: "1px solid #ccc",
       borderRadius: "5px",
       marginY: "20px",
       padding: "20px",
-      display: "inline-block"
+      display: "inline-block",
+      height: "50px"
     }}>{description || "Hover over a machine to know how that works"}</Box>
 
     <SigmaContainer
     style={{
       width: "70vw",
-      height: "70vh",
+      height: "60vh",
     }}
     settings={{
       hideLabelsOnMove: false,
@@ -140,7 +144,9 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
     }}
   >
     <GraphComponent system={system} setDescription={setDescription}/>
-  </SigmaContainer></Box>
+  </SigmaContainer>
+    <ChatBox />
+  </Box>
 
 }
 
