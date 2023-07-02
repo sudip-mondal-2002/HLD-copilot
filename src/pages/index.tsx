@@ -1,9 +1,8 @@
 import Head from 'next/head'
 import {Inter} from 'next/font/google'
 import {RequirementsForm} from "@/components/input/RequirementsForm";
-import {Stack} from "@mui/system";
 import {History} from "@/components/history/History";
-import {Container, Grid} from "@mui/material";
+import {Grid} from "@mui/material";
 
 const inter = Inter({subsets: ['latin']})
 

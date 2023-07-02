@@ -3,6 +3,7 @@ import React from "react";
 import {Box, Button, Container, Typography} from "@mui/material";
 import {useRouter} from "next/router";
 import {NoHistory} from "@/components/history/NoHistory";
+import {LoadingForm} from "@/components/history/Loading";
 
 export const History = () => {
   const [history, setHistory] = React.useState<HistoryItem[]>();
@@ -29,17 +30,19 @@ export const History = () => {
           }}>
             <Typography variant={"body1"} sx={{width: "30%"}}>{item.title}</Typography>
             <Typography
-              sx={ {width: "40%"}}
+              sx={{width: "40%"}}
               variant={"body2"}>{item.description.length > 30 ? item.description.slice(0, 27) + "..." : item.description}</Typography>
             <Box>
               <Button variant={"outlined"} onClick={async () => {
                 await router.push(`/system/${item.id}`)
-              }} sx={{marginRight:"10px"}}>Edit/View</Button>
+              }} sx={{marginRight: "10px"}}>Edit/View</Button>
               <Button variant={"outlined"} color={"secondary"}
                       onClick={() => deleteHistoryItem(item.id)}>Delete</Button>
             </Box>
           </Box>
-        }) : <NoHistory/> : <p>Loading...</p>
+        }) : <NoHistory/> : <Box sx={{
+          height: "90vh"
+        }}> <LoadingForm/></Box>
       }
     </Container>
   )

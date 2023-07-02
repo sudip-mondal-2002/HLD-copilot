@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 import Head from "next/head";
 import {Grid} from "@mui/material";
+import {Loading} from "@/components/history/Loading";
 
 const SystemDisplay = dynamic(import("@/components/graph/SystemDisplay"), {ssr: false});
 
@@ -39,7 +40,7 @@ const SystemHistory = () => {
         <Grid item={true} xs={12} md={8}>
           <SystemDisplay system={history.system}/>
         </Grid>
-      </> : <p>Loading...</p>}
+      </> : <Loading/>}
     </Grid>
   </>
 }
