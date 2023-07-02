@@ -1,13 +1,13 @@
 import {useRouter} from "next/router";
 import {HistoryItem} from "@/hooks/useHldGenerator";
 import {RequirementsForm} from "@/components/input/RequirementsForm";
-import {Stack} from "@mui/system";
 import dynamic from "next/dynamic";
 import React from "react";
 import Head from "next/head";
-import {Container} from "@mui/material";
+import {Grid} from "@mui/material";
 
 const SystemDisplay = dynamic(import("@/components/graph/SystemDisplay"), {ssr: false});
+
 
 const SystemHistory = () => {
   const router = useRouter()
@@ -26,20 +26,22 @@ const SystemHistory = () => {
       <meta name="viewport" content="width=device-width, initial-scale=1"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
-    <Container maxWidth={false} sx={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-    }}>
-      {history ? <> <RequirementsForm
-        _projectTitle={history.title}
-        _projectDescription={history.description}
-        _requirements={history.requirements}
-        _projectID={history.id}
-      />
-        <SystemDisplay system={history.system}/></>: <p>Loading...</p>}
-    </Container></>
+    <Grid container={true}>
+      {history ? <>
+        <Grid item={true} xs={12} md={4}>
+          <RequirementsForm
+            _projectTitle={history.title}
+            _projectDescription={history.description}
+            _requirements={history.requirements}
+            _projectID={history.id}
+          />
+        </Grid>
+        <Grid item={true} xs={12} md={8}>
+          <SystemDisplay system={history.system}/>
+        </Grid>
+      </> : <p>Loading...</p>}
+    </Grid>
+  </>
 }
 
 export default SystemHistory

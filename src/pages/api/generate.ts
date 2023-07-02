@@ -4,7 +4,7 @@ import {Requirements} from "@/types/Requirements";
 import * as fs from "fs";
 import {openai} from "@/utils/openai";
 
-export default async function handler(
+export async function POST(
   req: NextApiRequest,
   res: NextApiResponse<System>
 ) {

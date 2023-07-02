@@ -31,14 +31,7 @@ export const RequirementsForm = (
   const {generate: generateSystem} = useHldGenerator(_projectID)
 
   return (
-    <Container
-      sx={{
-        width: {
-          sm: "100%",
-          md: "30%"
-        }
-      }}
-    >
+    <Container>
       <TextField
         required={true}
         margin={"normal"}

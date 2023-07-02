@@ -3,6 +3,7 @@ import {Inter} from 'next/font/google'
 import {RequirementsForm} from "@/components/input/RequirementsForm";
 import {Stack} from "@mui/system";
 import {History} from "@/components/history/History";
+import {Container, Grid} from "@mui/material";
 
 const inter = Inter({subsets: ['latin']})
 
@@ -15,10 +16,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
-        <Stack spacing={2} direction={"row"}>
+      <Grid container={true}>
+        <Grid item={true} xs={12} md={4}>
           <RequirementsForm/>
+        </Grid>
+        <Grid item={true} xs={12} md={8}>
           <History/>
-        </Stack>
+        </Grid>
+      </Grid>
     </>
   )
 }
