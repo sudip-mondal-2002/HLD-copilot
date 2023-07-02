@@ -1,38 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# HLD Copilot
 
-## Getting Started
+HLD Copilot is a web application that leverages the power of GPT-3.5, an advanced language model, to generate high-level designs for distributed microservices. It aims to assist developers and architects in rapidly creating initial high-level designs for their microservice-based systems.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- **High-level design generation**: HLD Copilot utilizes the GPT-3.5 language model to generate high-level designs for distributed microservices based on user-provided inputs and requirements.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **User-friendly interface**: The web application provides a simple and intuitive interface for users to input their requirements and interact with the system.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- **Real-time chat**: Users can have interactive conversations with the AI-powered GPT-3.5 model to discuss and refine the high-level designs. The AI responds to user queries and provides suggestions based on its training.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/generate.ts`.
+## Deployment
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The HLD Copilot web application is deployed and accessible at the following link: [HLD Copilot](https://hld-copilot.azurewebsites.net/)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Feel free to visit the deployment and start using HLD Copilot to generate high-level designs for your distributed microservices.
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+1. Access the HLD Copilot web application using the deployment link provided above.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Provide your system requirements, such as desired functionalities, performance expectations, scalability requirements, and any specific constraints, in the input fields.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. Click on the "Chat with AI" button to engage in a real-time conversation with the AI-powered GPT-3.5 model. Ask questions, seek clarifications, or request suggestions to refine and improve the high-level design.
 
-## Deploy on Vercel
+4. Review the generated high-level design presented in the chat interface. You can iterate on the conversation and make adjustments to the design as needed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Customize and modify the high-level design as per your requirements. You can collaborate with the AI model to further refine the design.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
