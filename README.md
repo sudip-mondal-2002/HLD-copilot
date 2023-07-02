@@ -30,9 +30,11 @@ Feel free to visit the deployment and start using HLD Copilot to generate high-l
 
 <hr/>
 
-<img width="1536" alt="Screenshot 2023-07-02 at 10 50 11 PM" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/4e437fd1-08db-434a-a1c7-56841f92897e">
+<img width="1536" alt="Home page" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/6991933b-dd3c-4020-be09-5c7df7f381c8">
+
 
 <hr/>
 
-<img width="1536" alt="Screenshot 2023-07-02 at 10 53 33 PM" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/fd4c1cc7-504e-4ea5-b91e-c688108f2b88">
+<img width="1536" alt="Generated System design" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/5fd139f1-5a2f-4c27-8909-4970b52fa364">
+
 
