@@ -23,7 +23,7 @@ export default async function POST(
   }
   const systemTypes = fs.readFileSync('src/types/System.ts').toString()
   try {
-    const chat:CreateChatCompletionRequest = {
+    const chat: CreateChatCompletionRequest = {
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -81,7 +81,7 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
         },
       ],
     }
-    if(incomingChat){
+    if (incomingChat) {
       chat.messages.push({
         role: "assistant",
         content: `content of server.json is 
@@ -94,7 +94,7 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
       })
       chat.messages.push({
         role: "system",
-        content: "Keep in mind users can only request to API Gateway/CDN"
+        content: "Keep in mind users can only request to API Gateway/CDN and the resultant system should be a connected network"
       })
       chat.messages.push({
         role: "assistant",
@@ -119,14 +119,19 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
     if (!extractedJSON) {
       res.status(500).end()
     }
-    if(rawReply?.content){
+    if (rawReply?.content) {
       rawReply.content = extractedJSON
     }
 
 
     const system = (rawReply?.content ? JSON.parse(rawReply.content || "") : {machines: [], users: []}) as System
 
-    system.users = system.users.filter(user => user.requests.length > 0)
+    const connectTo = system.machines.find(machine => machine.machineType === MachineTypes.API_GATEWAY || machine.machineType === MachineTypes.CONTENT_DELIVERY_NETWORK)
+    system.users = system.users.map((user) => {
+      if (user.requests.length) return user
+      user.requests = [connectTo?.id] as MachineID[]
+      return user
+    })
     system.users.map((user) => {
       // remove numeric characters from the name
       user.name = user.name.replace(/[0-9]/g, "").trim()
@@ -136,6 +141,20 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
         return machine?.machineType === MachineTypes.API_GATEWAY || machine?.machineType === MachineTypes.CONTENT_DELIVERY_NETWORK || machine?.machineType === MachineTypes.LOAD_BALANCER
       })
     })
+
+    // find the unique user names
+    const uniqueUserNames = new Set<string>(system.users.map(user => user.name))
+    // consolidate the users with the same name
+    system.users = Array.from(uniqueUserNames).map((userName) => {
+      const usersWithSameName = system.users.filter(user => user.name === userName)
+      const requests = usersWithSameName.reduce((acc, user) => [...acc, ...user.requests], [] as MachineID[])
+      return {
+        name: userName,
+        requests,
+        description: usersWithSameName[0].description
+      }
+    })
+
 
     // Run a BFS to find which machines are being used directly or indirectly by users
     const queue = system.users.reduce((acc, user) => [...acc, ...user.requests], [] as MachineID[])
