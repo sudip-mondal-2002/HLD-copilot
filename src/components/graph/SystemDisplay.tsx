@@ -1,7 +1,7 @@
 import {System} from "@/types/System";
 import Graph from "graphology";
 import React from "react";
-import {SigmaContainer, useLoadGraph, useRegisterEvents} from "@react-sigma/core";
+import {SigmaContainer, useLoadGraph, useRegisterEvents, useSigma} from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
 import {MachineTypes} from "@/types/System";
 import getNodeImageProgram from "sigma/rendering/webgl/programs/node.image";
@@ -9,6 +9,7 @@ import {useLayoutForceAtlas2} from "@react-sigma/layout-forceatlas2";
 import {SigmaNodeEventPayload} from "sigma/sigma";
 import {Box} from "@mui/material";
 import {ChatBox} from "@/components/graph/ChatBox";
+import {TouchCoords} from "sigma/types";
 
 type SystemDisplayProps = {
   system: System
@@ -40,7 +41,13 @@ const GraphComponent = ({system, setDescription}: {
     system: System
     setDescription: (description: string) => void
 }) => {
-  const {assign} = useLayoutForceAtlas2()
+  const {assign} = useLayoutForceAtlas2({
+    settings:{
+      slowDown: 200,
+      strongGravityMode: false
+    },
+    iterations: 1000
+  })
   const loadGraph = useLoadGraph()
   const registerEvents = useRegisterEvents()
   React.useEffect(() => {
@@ -112,6 +119,9 @@ const GraphComponent = ({system, setDescription}: {
   }, [registerEvents, setDescription, system.machines])
   return null
 }
+
+
+
 const SystemDisplay = ({system}: SystemDisplayProps) => {
   const [description, setDescription] = React.useState<string>("")
 
@@ -130,11 +140,12 @@ const SystemDisplay = ({system}: SystemDisplayProps) => {
 
     <SigmaContainer
     style={{
-      width: "70vw",
+      width: "100%",
       height: "60vh",
     }}
     settings={{
-      hideLabelsOnMove: false,
+      labelDensity: 0,
+      labelSize: 10,
       defaultEdgeType: "arrow",
       maxCameraRatio: 1,
       minCameraRatio: 1,
