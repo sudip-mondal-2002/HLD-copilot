@@ -1,31 +1,27 @@
 import React from 'react';
-import {TextField} from "@mui/material";
+import { TextField } from '@mui/material';
 type RequirementsInputProps = {
   placeholder: string;
   onAdd: (requirement: string) => void;
-}
+};
 
-export const RequirementsInput = (
-  {
-    placeholder,
-    onAdd
-  }:RequirementsInputProps) => {
-  const [requirement, setRequirement] = React.useState<string>("")
+export const RequirementsInput = ({ placeholder, onAdd }: RequirementsInputProps) => {
+  const [requirement, setRequirement] = React.useState<string>('');
   return (
     <TextField
-      margin={"normal"}
+      margin={'normal'}
       placeholder={placeholder}
-      label={"Add new requirement"}
-      helperText={"Press Enter to add"}
+      label={'Add new requirement'}
+      helperText={'Press Enter to add'}
       fullWidth={true}
       value={requirement}
-      onChange={(event) => setRequirement(event.target.value)}
+      onChange={event => setRequirement(event.target.value)}
       onKeyDownCapture={(event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter") {
-            onAdd(requirement)
-            setRequirement("")
+        if (event.key === 'Enter') {
+          onAdd(requirement);
+          setRequirement('');
         }
       }}
     />
-  )
-}
+  );
+};

@@ -1,4 +1,5 @@
 # HLD Copilot
+
 ## Track: Full stack development
 
 HLD Copilot is a web application that leverages the power of GPT-3.5, an advanced language model, to generate high-level designs for distributed microservices. It aims to assist developers and architects in rapidly creating initial high-level designs for their microservice-based systems.
@@ -33,9 +34,6 @@ Feel free to visit the deployment and start using HLD Copilot to generate high-l
 
 <img width="1536" alt="Home page" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/6991933b-dd3c-4020-be09-5c7df7f381c8">
 
-
 <hr/>
 
 <img width="1536" alt="Generated System design" src="https://github.com/sudip-mondal-2002/HLD-copilot/assets/74463091/5fd139f1-5a2f-4c27-8909-4970b52fa364">
-
-

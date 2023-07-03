@@ -1,6 +1,4 @@
-
-
 export type Requirements = {
-  functional: string[]
-  nonFunctional: string[]
-}
+  functional: string[];
+  nonFunctional: string[];
+};

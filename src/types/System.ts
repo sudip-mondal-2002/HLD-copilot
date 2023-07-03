@@ -2,12 +2,12 @@ export enum MachineTypes {
   COMPUTE = 'COMPUTE', // Can be used as servers where the original REST/GraphQL API is hosted
   LOAD_BALANCER = 'LOAD_BALANCER', // Reverse proxy that distributes requests to other machines
   SQL_DATABASE = 'SQL_DATABASE', // USed to store data in SQL tables
-  NOSQL_DATABASE = "NOSQL_DATABASE", // Used to store data in NoSQL documents
+  NOSQL_DATABASE = 'NOSQL_DATABASE', // Used to store data in NoSQL documents
   CACHE = 'CACHE', // Used to store data in key-value pairs
   FILE_STORAGE = 'FILE_STORAGE', // Used to store files
   MESSAGE_QUEUE = 'MESSAGE_QUEUE', // Used as message brokers for asynchronous communication
   CONTENT_DELIVERY_NETWORK = 'CONTENT_DELIVERY_NETWORK', // Used to cache static assets
-  API_GATEWAY = "API_GATEWAY" // Used to aggregate multiple APIs into one
+  API_GATEWAY = 'API_GATEWAY', // Used to aggregate multiple APIs into one
 }
 
 export enum ProtocolTypes {
@@ -17,31 +17,31 @@ export enum ProtocolTypes {
   UDP = 'UDP',
 }
 
-export type MachineID = number
-export type ConnectionID = number
+export type MachineID = number;
+export type ConnectionID = number;
 
 export type Machine = {
-  id: MachineID
-  name: string // Name should be short but telling what is the machine used for
-  machineType: MachineTypes
-  description: string // this should be different from the description of the machine type. This should be more specific to the system and how the machine works
-}
+  id: MachineID;
+  name: string; // Name should be short but telling what is the machine used for
+  machineType: MachineTypes;
+  description: string; // this should be different from the description of the machine type. This should be more specific to the system and how the machine works
+};
 
 export type Connection = {
-  id: ConnectionID
-  protocol: ProtocolTypes
-  requestOrigin: MachineID
-  requestDestination: MachineID
-}
+  id: ConnectionID;
+  protocol: ProtocolTypes;
+  requestOrigin: MachineID;
+  requestDestination: MachineID;
+};
 
 export type User = {
-  name: string // customer/admin/vendor/...(stakeholder)
-  description: string
-  requests: MachineID[] // id of API_GATEWAY/CDN(when needed) that the user can request to
-}
+  name: string; // customer/admin/vendor/...(stakeholder)
+  description: string;
+  requests: MachineID[]; // id of API_GATEWAY/CDN(when needed) that the user can request to
+};
 
 export type System = {
-  machines: Machine[] // list of machines to be used in the system
-  users: User[] // list of stakeholders that use the system, all the users.name should be unique
-  connections: Connection[] // list of connections between machines
-}
+  machines: Machine[]; // list of machines to be used in the system
+  users: User[]; // list of stakeholders that use the system, all the users.name should be unique
+  connections: Connection[]; // list of connections between machines
+};
