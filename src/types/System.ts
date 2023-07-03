@@ -10,15 +10,29 @@ export enum MachineTypes {
   API_GATEWAY = "API_GATEWAY" // Used to aggregate multiple APIs into one
 }
 
+export enum ProtocolTypes {
+  HTTP = 'HTTP',
+  WEBSOCKET = 'WEBSOCKET',
+  TCP = 'TCP',
+  UDP = 'UDP',
+}
+
 export type MachineID = number
+export type ConnectionID = number
+
 export type Machine = {
   id: MachineID
   name: string // Name should be short but telling what is the machine used for
   machineType: MachineTypes
-  uses: MachineID[] // this final system should be a connected network
   description: string // this should be different from the description of the machine type. This should be more specific to the system and how the machine works
 }
-// machineA.uses.includes(machineB.machineID) means machineA sends requests to machineB
+
+export type Connection = {
+  id: ConnectionID
+  protocol: ProtocolTypes
+  requestOrigin: MachineID
+  requestDestination: MachineID
+}
 
 export type User = {
   name: string // customer/admin/vendor/...(stakeholder)
@@ -29,4 +43,5 @@ export type User = {
 export type System = {
   machines: Machine[] // list of machines to be used in the system
   users: User[] // list of stakeholders that use the system, all the users.name should be unique
+  connections: Connection[] // list of connections between machines
 }

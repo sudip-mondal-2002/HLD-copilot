@@ -1,5 +1,5 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
-import {MachineID, MachineTypes, System} from "@/types/System";
+import {Connection, Machine, MachineID, MachineTypes, System} from "@/types/System";
 import {Requirements} from "@/types/Requirements";
 import * as fs from "fs";
 import {openai} from "@/utils/openai";
@@ -64,8 +64,8 @@ What are the machines available to use in the system?
         {role: "assistant", content: "Any specifications about the connections"},
         {
           role: "user", content: `
-Compute servers should be using appropriate database/cache servers.
-API gateway should be using appropriate compute servers.
+Compute servers should be connected To appropriate database/cache servers.
+API gateway should be connectedTo appropriate compute servers.
 Users should be able to request to API Gateway/CDN only.
 If any machine has a load balancer for it, no other server should use that server directly, they should use the load balancer instead. Respective Load balancer will use that server.
 `
@@ -98,12 +98,12 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
       })
       chat.messages.push({
         role: "assistant",
-        content: "Here is the revised content of server.json"
+        content: "Here is the revised complete content of server.json"
       })
     } else {
       chat.messages.push({
         role: "assistant",
-        content: 'content of server.json is'
+        content: 'complete content of server.json is'
       })
     }
 
@@ -123,26 +123,13 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
       rawReply.content = extractedJSON
     }
 
+    console.log(rawReply?.content)
+
 
     const system = (rawReply?.content ? JSON.parse(rawReply.content || "") : {machines: [], users: []}) as System
 
-    const connectTo = system.machines.find(machine => machine.machineType === MachineTypes.API_GATEWAY || machine.machineType === MachineTypes.CONTENT_DELIVERY_NETWORK)
-    system.users = system.users.map((user) => {
-      if (user.requests.length) return user
-      user.requests = [connectTo?.id] as MachineID[]
-      return user
-    })
-    system.users.map((user) => {
-      // remove numeric characters from the name
-      user.name = user.name.replace(/[0-9]/g, "").trim()
-      // if some machine is not An API Gateway or CDN, then remove the requests to it
-      user.requests = user.requests.filter((machineID) => {
-        const machine = system.machines.find(machine => machine.id === machineID)
-        return machine?.machineType === MachineTypes.API_GATEWAY || machine?.machineType === MachineTypes.CONTENT_DELIVERY_NETWORK || machine?.machineType === MachineTypes.LOAD_BALANCER
-      })
-    })
 
-    // find the unique user names
+    // find the unique users
     const uniqueUserNames = new Set<string>(system.users.map(user => user.name))
     // consolidate the users with the same name
     system.users = Array.from(uniqueUserNames).map((userName) => {
@@ -159,15 +146,13 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
     // Run a BFS to find which machines are being used directly or indirectly by users
     const queue = system.users.reduce((acc, user) => [...acc, ...user.requests], [] as MachineID[])
     const usedMachines = new Set<MachineID>()
-    while (queue.length > 0) {
-      const machineID = queue.pop()
-      if (machineID && !usedMachines.has(machineID)) {
+    while (queue.length) {
+        const machineID = queue.shift()
+        if (!machineID) continue
+        if (usedMachines.has(machineID)) continue
         usedMachines.add(machineID)
-        const machine = system.machines.find(machine => machine.id === machineID)
-        if (machine) {
-          queue.push(...machine.uses)
-        }
-      }
+        const machines = system.connections.filter(connection => connection.requestOrigin === machineID).map(connection => connection.requestDestination)
+        queue.push(...machines)
     }
 
     // remove the machines that are not being used by users
@@ -179,6 +164,19 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
       machine.description = machine.description.replace(/"/g, "")
       return machine
     })
+
+    const currentMachines = system.machines.map(machine => machine.id)
+    system.connections = system.connections.filter(connection => currentMachines.includes(connection.requestOrigin) && currentMachines.includes(connection.requestDestination))
+
+    // remove the duplicate connections
+    system.connections = system.connections.reduce((acc, connection) => {
+        const existingConnection = acc.find(existingConnection => existingConnection.requestOrigin === connection.requestOrigin && existingConnection.requestDestination === connection.requestDestination)
+        if (!existingConnection) {
+            return [...acc, connection]
+        }
+        return acc
+    }, [] as Connection[])
+
 
     res.status(200).json(system)
   } catch

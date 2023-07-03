@@ -1,15 +1,14 @@
 import {System} from "@/types/System";
 import Graph from "graphology";
 import React from "react";
-import {SigmaContainer, useLoadGraph, useRegisterEvents, useSigma} from "@react-sigma/core";
+import {SigmaContainer, useLoadGraph, useRegisterEvents} from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
 import {MachineTypes} from "@/types/System";
 import getNodeImageProgram from "sigma/rendering/webgl/programs/node.image";
 import {useLayoutForceAtlas2} from "@react-sigma/layout-forceatlas2";
 import {SigmaNodeEventPayload} from "sigma/sigma";
-import {Box} from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import {ChatBox} from "@/components/graph/ChatBox";
-import {TouchCoords} from "sigma/types";
 
 type SystemDisplayProps = {
   system: System
@@ -38,11 +37,11 @@ const getImageUrlFromMachineType = (machineType: MachineTypes) => {
   }
 }
 const GraphComponent = ({system, setDescription}: {
-    system: System
-    setDescription: (description: string) => void
+  system: System
+  setDescription: (description: string) => void
 }) => {
   const {assign} = useLayoutForceAtlas2({
-    settings:{
+    settings: {
       slowDown: 200,
       strongGravityMode: false
     },
@@ -66,49 +65,45 @@ const GraphComponent = ({system, setDescription}: {
           y: Math.random()
         })
     })
-    system.machines.forEach(machine => {
-      machine.uses.forEach(uses => {
-        if (!system.machines.find(machine => machine.id === uses)) {
-            return
-        }
-        graph.addEdge(machine.id, uses, {
-          size: 5
-        })
+    system.connections.forEach(connection => {
+      graph.addEdge(connection.requestOrigin, connection.requestDestination, {
+        size: 5,
+        label: connection.protocol,
       })
     })
 
     system.users.forEach(user => {
-        graph.addNode(user.name,
-            {
-            label: user.name,
-            type: "image",
-            image: "/user.svg",
-            color: "#fff",
-            shape: "rect",
-            size: 20,
-            x: Math.random(),
-            y: Math.random()
-            })
+      graph.addNode(user.name,
+        {
+          label: user.name,
+          type: "image",
+          image: "/user.svg",
+          color: "#fff",
+          shape: "rect",
+          size: 20,
+          x: Math.random(),
+          y: Math.random()
+        })
     })
 
     system.users.forEach(user => {
       user.requests.forEach(request => {
         if (!system.machines.find(machine => machine.id === request)) {
-            return
+          return
         }
         graph.addEdge(user.name, request, {
-          size: 10
+          size: 10,
         })
       })
     })
     loadGraph(graph)
     assign()
-  }, [assign, loadGraph, system.machines, system.users])
+  }, [assign, loadGraph, system.connections, system.machines, system.users])
   React.useEffect(() => {
     registerEvents({
       enterNode(payload: SigmaNodeEventPayload) {
         const machine = system.machines.find(machine => machine.id === parseInt(payload.node))
-        if(machine) {
+        if (machine) {
           setDescription(machine.machineType + " : " + machine.description)
         }
       },
@@ -121,42 +116,46 @@ const GraphComponent = ({system, setDescription}: {
 }
 
 
-
 const SystemDisplay = ({system}: SystemDisplayProps) => {
   const [description, setDescription] = React.useState<string>("")
 
-
   return <Box sx={{
-    padding: "20px"
+    padding: "10px"
   }}>
-    <Box sx={{
+    {/*<Button variant={'contained'} sx={{*/}
+    {/*  display: "block",*/}
+    {/*}}>*/}
+    {/*  Download*/}
+    {/*</Button>*/}
+    <Typography sx={{
       border: "1px solid #ccc",
       borderRadius: "5px",
-      marginY: "20px",
-      padding: "20px",
+      marginY: "5px",
+      padding: "10px",
       display: "inline-block",
       height: "50px"
-    }}>{description || "Hover over a machine to know how that works"}</Box>
-
+    }}>{description || "Hover over a machine to know how that works"}</Typography>
     <SigmaContainer
-    style={{
-      width: "100%",
-      height: "60vh",
-    }}
-    settings={{
-      labelDensity: 0,
-      labelSize: 10,
-      defaultEdgeType: "arrow",
-      maxCameraRatio: 1,
-      minCameraRatio: 1,
-      nodeProgramClasses: {
-        image: getNodeImageProgram()
-      }
-    }}
-  >
-    <GraphComponent system={system} setDescription={setDescription}/>
-  </SigmaContainer>
-    <ChatBox />
+      style={{
+        width: "100%",
+        height: "60vh",
+      }}
+      settings={{
+        labelDensity: 0,
+        labelSize: 10,
+        edgeLabelSize: 10,
+        renderEdgeLabels: true,
+        defaultEdgeType: "arrow",
+        maxCameraRatio: 1,
+        minCameraRatio: 1,
+        nodeProgramClasses: {
+          image: getNodeImageProgram()
+        }
+      }}
+    >
+      <GraphComponent system={system} setDescription={setDescription}/>
+    </SigmaContainer>
+    <ChatBox/>
   </Box>
 
 }
