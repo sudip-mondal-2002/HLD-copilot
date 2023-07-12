@@ -14,7 +14,7 @@ HLD Copilot is a web application that leverages the power of GPT-3.5, an advance
 
 ## Usage
 
-1. Access the HLD Copilot web application using the deployment link provided above.
+1. Run the HLD copilot in your localhost.(You need a OpenAI API key for that)
 
 2. Provide your system requirements, such as desired functionalities, performance expectations, scalability requirements, and any specific constraints, in the input fields.
 
