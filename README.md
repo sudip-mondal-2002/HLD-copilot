@@ -12,12 +12,6 @@ HLD Copilot is a web application that leverages the power of GPT-3.5, an advance
 
 - **Real-time chat**: Users can have interactive conversations with the AI-powered GPT-3.5 model to discuss and refine the high-level designs. The AI responds to user queries and provides suggestions based on its training.
 
-## Deployment
-
-The HLD Copilot web application is deployed and accessible at the following link: [HLD Copilot](https://hld-copilot.azurewebsites.net/)
-
-Feel free to visit the deployment and start using HLD Copilot to generate high-level designs for your distributed microservices.
-
 ## Usage
 
 1. Access the HLD Copilot web application using the deployment link provided above.
