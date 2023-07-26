@@ -21,63 +21,45 @@ export default async function POST(req: NextApiRequest, res: NextApiResponse<Sys
   const systemTypes = fs.readFileSync('src/types/System.ts').toString();
   try {
     const chat: CreateChatCompletionRequest = {
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4',
       messages: [
         {
+          role: 'system',
+          content: `You need to build a microservice system as per the requirements and return a JSON object ob type System with the following structure
+          ${systemTypes}
+  There should not be any single point of failure.
+  The compute servers should be distributed such that they follow single responsibility principle.
+  Compute servers should be connected To appropriate database/cache servers.
+  API gateway should be connectedTo appropriate compute servers.
+  Users should be able to request to API Gateway/CDN only.
+  If any machine has a load balancer for it, no other server should use that server directly, they should use the load balancer instead. Respective Load balancer will use that server.  
+
+  The machine names should be self-explanatory. (Eg. Product-service, Profile-pic-cache, etc.)
+
+  The machine descriptions should be in the following format:
+  This <machinetype> is used for <purpose>. The machine does so by <how it does it>.
+
+  In case of multiple Users, all user names should be unique.
+  The whole system should be a connected graph.
+`
+        }, {
           role: 'user',
           content: `
   Design a microservice system that defines high level of ${title} which ${description}.
-  There should not be any single point of failure.
-  The compute servers should be distributed such that they follow single responsibility principle.
-        `,
-        },
-        {
-          role: 'assistant',
-          content: `
-What are the machines available to use in the system?
-`,
-        },
-        { role: 'user', content: `${systemTypes}` },
-        { role: 'assistant', content: `What are the functional requirements of the system?` },
-        {
-          role: 'user',
-          content: `Functional Requirements:
+        
+  Functional Requirements:
   ${requirements.functional.reduce((acc, arg) => {
-    return `${acc}
+            return `${acc}
 \t- ${arg}`;
-  }, '')}`,
-        },
-        { role: 'assistant', content: `What are the non functional requirements of the system?` },
-
-        {
-          role: 'user',
-          content: `Non Functional Requirements:
+          }, '')}
+  
+  Non Functional Requirements:
   ${requirements.nonFunctional.reduce((acc, arg) => {
-    return `${acc}
+            return `${acc}
 \t- ${arg}`;
-  }, '')}
+          }, '')}
 `,
-        },
-        { role: 'assistant', content: 'Any specifications about the connections' },
-        {
-          role: 'user',
-          content: `
-Compute servers should be connected To appropriate database/cache servers.
-API gateway should be connectedTo appropriate compute servers.
-Users should be able to request to API Gateway/CDN only.
-If any machine has a load balancer for it, no other server should use that server directly, they should use the load balancer instead. Respective Load balancer will use that server.
-`,
-        },
-        { role: 'assistant', content: 'How should the machine naming and description should look like?' },
-        {
-          role: 'user',
-          content: `
-The machine names should be self-explanatory. (Eg. Product-service, Profile-pic-cache, etc.)
-
-The machine descriptions should be in the following format:
-This <machinetype> is used for <purpose>. The machine does so by <how it does it>.
-`,
-        },
+        }
       ],
     };
     if (incomingChat) {
@@ -123,39 +105,9 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
       rawReply.content = extractedJSON;
     }
 
-    console.log(rawReply?.content);
-
     const system = (rawReply?.content ? JSON.parse(rawReply.content || '') : { machines: [], users: [] }) as System;
 
-    // find the unique users
-    const uniqueUserNames = new Set<string>(system.users.map(user => user.name));
-    // consolidate the users with the same name
-    system.users = Array.from(uniqueUserNames).map(userName => {
-      const usersWithSameName = system.users.filter(user => user.name === userName);
-      const requests = usersWithSameName.reduce((acc, user) => [...acc, ...user.requests], [] as MachineID[]);
-      return {
-        name: userName,
-        requests,
-        description: usersWithSameName[0].description,
-      };
-    });
 
-    // Run a BFS to find which machines are being used directly or indirectly by users
-    const queue = system.users.reduce((acc, user) => [...acc, ...user.requests], [] as MachineID[]);
-    const usedMachines = new Set<MachineID>();
-    while (queue.length) {
-      const machineID = queue.shift();
-      if (!machineID) continue;
-      if (usedMachines.has(machineID)) continue;
-      usedMachines.add(machineID);
-      const machines = system.connections
-        .filter(connection => connection.requestOrigin === machineID)
-        .map(connection => connection.requestDestination);
-      queue.push(...machines);
-    }
-
-    // remove the machines that are not being used by users
-    system.machines = system.machines.filter(machine => usedMachines.has(machine.id));
 
     system.machines = system.machines.map(machine => {
       // remove the quotes from the name and description and capitalize the first letter and lowercase the rest
@@ -170,18 +122,7 @@ This <machinetype> is used for <purpose>. The machine does so by <how it does it
         currentMachines.includes(connection.requestOrigin) && currentMachines.includes(connection.requestDestination)
     );
 
-    // remove the duplicate connections
-    system.connections = system.connections.reduce((acc, connection) => {
-      const existingConnection = acc.find(
-        existingConnection =>
-          existingConnection.requestOrigin === connection.requestOrigin &&
-          existingConnection.requestDestination === connection.requestDestination
-      );
-      if (!existingConnection) {
-        return [...acc, connection];
-      }
-      return acc;
-    }, [] as Connection[]);
+
 
     res.status(200).json(system);
   } catch (e) {
