@@ -20,7 +20,7 @@
     "graphology-types": "^0.24.7",
     "lodash": "^4.17.21",
     "next": "13.4.7",
-    "openai": "^3.3.0",
+    "openai": "^4.17.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sigma": "^2.4.0",
